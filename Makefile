@@ -11,6 +11,9 @@ LDR_HOST_PORT ?= 5731
 
 .PHONY: up down restart logs
 
+build:
+	docker build -t localdeepresearch/local-deep-research:latest .
+
 up:
 	@PORT=$${LDR_HOST_PORT:-5731}; \
 	echo "Starting: $(SERVICES) on host port $$PORT"; \
