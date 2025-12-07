@@ -115,37 +115,9 @@ services:
       - ./local_collections/research_papers:/local_collections/research_papers/
     restart: unless-stopped
     depends_on:
-      ollama:
-        condition: service_healthy
-
       searxng:
         condition: service_started
 
-
-  ollama:
-    image: ollama/ollama:latest
-    # Note: GPU acceleration disabled by default (CPU-only base)
-    # For NVIDIA GPU support, use docker-compose.gpu.override.yml
-    # For AMD GPU support (future), use docker-compose.amd.override.yml
-
-    container_name: ollama_service
-    entrypoint: "/scripts/ollama_entrypoint.sh ${MODEL:-gemma3:12b}"
-    healthcheck:
-      test: [ "CMD", "ollama", "show", "${MODEL:-gemma3:12b}" ]
-      interval: 10s
-      timeout: 5s
-      start_period: 10m
-      retries: 2
-    environment:
-      OLLAMA_KEEP_ALIVE: '30m'
-    volumes:
-      - ollama_data:/root/.ollama
-      - ldr_scripts:/scripts
-    networks:
-      - ldr-network
-
-
-    restart: unless-stopped
 
   searxng:
     image: searxng/searxng:latest
@@ -161,7 +133,6 @@ services:
 volumes:
   ldr_data:
   ldr_scripts:
-  ollama_data:
   searxng_data:
 networks:
   ldr-network:
