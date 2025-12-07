@@ -1,4 +1,5 @@
 import importlib
+import os
 from typing import Dict, List
 from datetime import datetime, UTC
 
@@ -26,6 +27,7 @@ class IntegratedReportGenerator:
         searches_per_section: int = 2,
         search_system=None,
         llm: BaseChatModel | None = None,
+        output_language: str | None = None,
     ):
         """
         Args:
@@ -50,6 +52,10 @@ class IntegratedReportGenerator:
 
         self.searches_per_section = (
             searches_per_section  # Control search depth per section
+        )
+        # Language for all prompts/responses
+        self.output_language = output_language or os.environ.get(
+            "LDR_REPORT_LANGUAGE", "Russian"
         )
 
     def generate_report(self, initial_findings: Dict, query: str) -> Dict:
@@ -78,6 +84,8 @@ class IntegratedReportGenerator:
 
         Content Summary:
         {combined_content[:1000]}... [truncated]
+
+        Respond only in {self.output_language}. Use {self.output_language} for all section and subsection names.
 
         Determine the most appropriate report structure by:
         1. Analyzing the type of content (technical, business, academic, etc.)
@@ -252,7 +260,8 @@ class IntegratedReportGenerator:
                         f"Include unique insights, specific examples, and concrete data. "
                         f"Use tables to organize information where applicable. "
                         f"For conclusion sections: synthesize key findings and provide forward-looking insights. "
-                        f"Build upon the research findings from earlier sections to create a cohesive narrative."
+                        f"Build upon the research findings from earlier sections to create a cohesive narrative. "
+                        f"Respond only in {self.output_language} and keep all headings/content in {self.output_language}."
                     )
                 else:
                     # Subsection-level prompt - more focused
@@ -269,7 +278,8 @@ class IntegratedReportGenerator:
                         f"Include unique details, specific examples, and concrete data. "
                         f"Use tables to organize information where applicable. "
                         f"IMPORTANT: Avoid repeating information that would logically be covered in other sections - focus on what makes this subsection unique. "
-                        f"Previous research exists - find specific angles for this subsection."
+                        f"Previous research exists - find specific angles for this subsection. "
+                        f"Respond only in {self.output_language} and keep all headings/content in {self.output_language}."
                     )
 
                 logger.info(

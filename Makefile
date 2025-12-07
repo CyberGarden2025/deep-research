@@ -3,23 +3,21 @@
 COMPOSE ?= docker compose
 SERVICES := local-deep-research searxng
 
-# Set OLLAMA=1 to also start the bundled Ollama service
-ifdef OLLAMA
-SERVICES += ollama
-endif
-
 # Defaults align with docker-compose.override.yml
 LDR_LLM_MODEL ?= gpt-oss:20b
 LDR_LLM_OPENAI_ENDPOINT_URL ?= http://host.docker.internal:18080/v1
 LDR_LLM_OPENAI_ENDPOINT_API_KEY ?= local-dev-no-key
+LDR_HOST_PORT ?= 5731
 
 .PHONY: up down restart logs
 
 up:
-	@echo "Starting: $(SERVICES)"
+	@PORT=$${LDR_HOST_PORT:-5731}; \
+	echo "Starting: $(SERVICES) on host port $$PORT"; \
 	LDR_LLM_MODEL=$(LDR_LLM_MODEL) \
 	LDR_LLM_OPENAI_ENDPOINT_URL=$(LDR_LLM_OPENAI_ENDPOINT_URL) \
 	LDR_LLM_OPENAI_ENDPOINT_API_KEY=$(LDR_LLM_OPENAI_ENDPOINT_API_KEY) \
+	LDR_HOST_PORT=$$PORT \
 	$(COMPOSE) up -d $(SERVICES)
 
 down:

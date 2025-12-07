@@ -24,7 +24,7 @@ services:
       - ldr-network
 
     ports:
-      - "5000:5000"
+      - "${LDR_HOST_PORT:-5731}:5000"
     environment:
       # ============================================================================
       # IMPORTANT: Almost all settings can be configured through the web interface.
